@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import path from 'path';
 import helmet from "helmet";
 import compression from "compression";
 import dotenv from "dotenv";
@@ -28,11 +29,14 @@ import {
   userLimiter,
   ipLimiter
 } from "./config/rateLimiter.js";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -86,6 +90,20 @@ app.use("/api/operator/payouts/:id/process", payoutLimiter);
 
 app.use("/api/admin/exports", exportLimiter);
 app.use("/api/admin/reports", exportLimiter);
+
+app.get("/api/health", (eq, res) => {
+  res.json({
+    status: 'ok', message: 'K-Trace API is running', timestamp: new Date().toISOString()
+  });
+});
+
+if (process.env.NODE_ENV === 'production') {
+  const clientBuildPath = path.join(__dirname, '../client/build');
+  app.use(express.static(clientBuildPath));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientBuildPath, 'index.html'));
+  });
+}
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/coffee_trace')
   .then(() => console.log('✅ Connected to MongoDB'))
