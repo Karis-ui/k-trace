@@ -2,34 +2,37 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { Plus, Trash2, UserCheck, UserX } from "lucide-react";
-
-const SkeletonCard = () => (
-  <div className="bg-white/80 backdrop-blur-lg p-4 rounded-2xl shadow-md animate-pulse h-28"></div>
-);
+import { Plus, Trash2, UserCheck, UserX, Search } from "lucide-react";
 
 export default function Farmers() {
   const [farmers, setFarmers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [newFarmer, setNewFarmer] = useState({ username: "", id_number: "", farm_location: "" });
-
-  const navigate = useNavigate();
+  const [totalFarmers, setTotalFarmers] = useState(0);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newFarmer, setNewFarmer] = useState({ name: "", phone: "", station: "" });
 
   const fetchFarmers = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get(`http://localhost:5000/api/farmers?page=${page}&q=${query}`);
-      setFarmers(res.data.farmers);
-      setTotalPages(res.data.totalPages);
+      const token = localStorage.getItem('token');
+      const res = await axios.get(
+        `http://localhost:5000/api/admin/farmers?search=${search}&page=${page}&limit=12`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.success) {
+        setFarmers(res.data.data.farmers || []);
+        setTotalFarmers(res.data.data.total || 0);
+        setTotalPages(Math.ceil((res.data.data.total || 0) / 12));
+      }
     } catch (err) {
       console.error(err);
-      setError("Could not fetch farmers.");
+      setError(err.response?.data?.error || "Could not fetch farmers.");
     } finally {
       setLoading(false);
     }
@@ -38,23 +41,37 @@ export default function Farmers() {
   useEffect(() => {
     const debounce = setTimeout(fetchFarmers, 300);
     return () => clearTimeout(debounce);
-  }, [query, page]);
+  }, [search, page]);
 
   const handleAddFarmer = async () => {
-    if (!newFarmer.username || !newFarmer.id_number || !newFarmer.farm_location) return;
+    if (!newFarmer.name || !newFarmer.phone) {
+      alert("Name and phone are required");
+      return;
+    }
     try {
-      await axios.post("http://localhost:5000/api/farmers", newFarmer);
-      setNewFarmer({ username: "", id_number: "", farm_location: "" });
+      const token = localStorage.getItem('token');
+      await axios.post(
+        "http://localhost:5000/api/admin/farmers",
+        newFarmer,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNewFarmer({ name: "", phone: "", station: "" });
+      setShowAddModal(false);
       fetchFarmers();
     } catch (err) {
       console.error(err);
-      alert("Failed to add farmer.");
+      alert(err.response?.data?.error || "Failed to add farmer.");
     }
   };
 
   const toggleStatus = async (id, currentStatus) => {
     try {
-      await axios.patch(`http://localhost:5000/api/farmers/${id}/status`, { status: currentStatus === "active" ? "suspended" : "active" });
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `http://localhost:5000/api/admin/farmers/${id}`,
+        { status: currentStatus === "active" ? "inactive" : "active" },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       fetchFarmers();
     } catch (err) {
       console.error(err);
@@ -65,122 +82,106 @@ export default function Farmers() {
   const deleteFarmer = async (id) => {
     if (!window.confirm("Are you sure you want to delete this farmer?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/farmers/${id}`);
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `http://localhost:5000/api/admin/farmers/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       fetchFarmers();
     } catch (err) {
       console.error(err);
-      alert("Failed to delete farmer.");
+      alert(err.response?.data?.error || "Failed to delete farmer.");
     }
-  };
-
-  const highlightMatch = (text, query) => {
-    if (!query) return text;
-    const regex = new RegExp(`(${query})`, "gi");
-    return text.split(regex).map((part, i) =>
-      regex.test(part) ? <span key={i} className="bg-yellow-200 px-1 rounded">{part}</span> : part
-    );
   };
 
   return (
     <div className="p-8 min-h-screen bg-gradient-to-br from-green-50 via-green-100 to-white space-y-6">
-      <h2 className="text-3xl font-bold text-green-900">Farmers Management</h2>
-
-      {/* Add Farmer Form */}
-      <div className="bg-white/90 p-6 rounded-2xl shadow-md flex flex-col md:flex-row gap-4">
-        <input
-          type="text"
-          placeholder="Name"
-          className="border border-green-300 rounded-lg p-2 flex-1"
-          value={newFarmer.username}
-          onChange={(e) => setNewFarmer({ ...newFarmer, username: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="ID Number"
-          className="border border-green-300 rounded-lg p-2 flex-1"
-          value={newFarmer.id_number}
-          onChange={(e) => setNewFarmer({ ...newFarmer, id_number: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Farm Location"
-          className="border border-green-300 rounded-lg p-2 flex-1"
-          value={newFarmer.farm_location}
-          onChange={(e) => setNewFarmer({ ...newFarmer, farm_location: e.target.value })}
-        />
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h2 className="text-3xl font-bold text-green-900">Farmers Management</h2>
         <button
-          onClick={handleAddFarmer}
-          className="bg-green-700 text-white px-4 py-2 rounded-xl flex items-center hover:bg-green-800 transition"
+          onClick={() => setShowAddModal(true)}
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center gap-2"
         >
-          <Plus className="mr-2 h-4 w-4" /> Add Farmer
+          <Plus className="h-4 w-4" /> Add Farmer
         </button>
       </div>
 
       {/* Search */}
-      <input
-        type="text"
-        placeholder="Search by name, ID or location..."
-        className="border border-green-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-        value={query}
-        onChange={(e) => { setQuery(e.target.value); setPage(1); }}
-      />
+      <div className="bg-white/90 p-4 rounded-xl shadow flex items-center gap-3">
+        <Search className="text-gray-400 h-5 w-5" />
+        <input
+          type="text"
+          placeholder="Search by name, phone or station..."
+          className="flex-1 border-none focus:outline-none bg-transparent"
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        />
+        <span className="text-sm text-gray-500">{totalFarmers} farmers</span>
+      </div>
+
+      {error && <p className="text-red-600 font-semibold">{error}</p>}
 
       {/* Farmers Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         <AnimatePresence>
           {loading
-            ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-            : farmers.length > 0
-              ? farmers.map((farmer) => (
-                <motion.div
-                  key={farmer.id_number}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 15 }}
-                  transition={{ duration: 0.35 }}
-                  className="bg-white/90 backdrop-blur-lg p-5 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 cursor-pointer transition transform"
-                >
-                  <p className="font-semibold text-lg text-green-900">{highlightMatch(farmer.username, query)}</p>
-                  <p className="text-sm text-green-700">{highlightMatch(farmer.id_number.toString(), query)}</p>
-                  <p className="text-sm text-green-500">{highlightMatch(farmer.farm_location, query)}</p>
-                  <p className="text-sm font-medium text-gray-600">Status: <span className={`font-bold ${farmer.status === "active" ? "text-green-600" : "text-red-600"}`}>{farmer.status}</span></p>
-                  <div className="mt-3 flex gap-2">
-                    <button
-                      onClick={() => toggleStatus(farmer._id, farmer.status)}
-                      className={`flex items-center px-3 py-1 rounded-lg text-white text-sm ${farmer.status === "active" ? "bg-orange-500 hover:bg-orange-600" : "bg-green-600 hover:bg-green-700"}`}
-                    >
-                      {farmer.status === "active" ? <UserX className="mr-1 h-4 w-4" /> : <UserCheck className="mr-1 h-4 w-4" />}
-                      {farmer.status === "active" ? "Suspend" : "Activate"}
-                    </button>
-                    <button
-                      onClick={() => deleteFarmer(farmer._id)}
-                      className="flex items-center px-3 py-1 rounded-lg text-white text-sm bg-red-600 hover:bg-red-700"
-                    >
-                      <Trash2 className="mr-1 h-4 w-4" /> Delete
-                    </button>
-                  </div>
-                </motion.div>
-              ))
-              : query && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="col-span-full text-center p-6 bg-white/80 rounded-2xl shadow-sm text-green-700"
-                >
-                  No farmers found.
-                </motion.div>
-              )}
+            ? Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="bg-white/80 rounded-2xl shadow-md animate-pulse h-40"></div>
+            ))
+            : farmers.map((farmer) => (
+              <motion.div
+                key={farmer._id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 15 }}
+                className="bg-white/90 backdrop-blur-lg p-5 rounded-2xl shadow-lg hover:shadow-xl transition"
+              >
+                <p className="font-semibold text-lg text-green-900">{farmer.name}</p>
+                <p className="text-sm text-green-700">{farmer.phone}</p>
+                <p className="text-sm text-green-500">{farmer.station || "No station"}</p>
+                <p className="text-sm font-medium text-gray-600 mt-2">
+                  Deliveries: {farmer.totalDeliveries || 0} |
+                  Weight: {(farmer.totalWeight || 0).toFixed(2)}kg
+                </p>
+                <p className="text-sm font-medium">
+                  Status: <span className={`font-bold ${farmer.status === "active" ? "text-green-600" : "text-red-600"}`}>
+                    {farmer.status || "active"}
+                  </span>
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <button
+                    onClick={() => toggleStatus(farmer._id, farmer.status)}
+                    className={`flex items-center px-3 py-1 rounded-lg text-white text-sm ${farmer.status === "active" ? "bg-orange-500 hover:bg-orange-600" : "bg-green-600 hover:bg-green-700"
+                      }`}
+                  >
+                    {farmer.status === "active" ? <UserX className="mr-1 h-4 w-4" /> : <UserCheck className="mr-1 h-4 w-4" />}
+                    {farmer.status === "active" ? "Suspend" : "Activate"}
+                  </button>
+                  <button
+                    onClick={() => deleteFarmer(farmer._id)}
+                    className="flex items-center px-3 py-1 rounded-lg text-white text-sm bg-red-600 hover:bg-red-700"
+                  >
+                    <Trash2 className="mr-1 h-4 w-4" /> Delete
+                  </button>
+                </div>
+              </motion.div>
+            ))}
         </AnimatePresence>
       </div>
 
+      {!loading && farmers.length === 0 && (
+        <div className="text-center py-12 bg-white/80 rounded-2xl">
+          <p className="text-gray-500 text-lg">No farmers found</p>
+        </div>
+      )}
+
       {/* Pagination */}
-      {farmers.length > 0 && (
+      {totalPages > 1 && (
         <div className="flex justify-center mt-6 gap-3">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-4 py-2 bg-green-600 text-white rounded disabled:bg-green-200"
+            className="px-4 py-2 bg-green-600 text-white rounded disabled:bg-green-300 disabled:cursor-not-allowed"
           >
             Prev
           </button>
@@ -190,10 +191,60 @@ export default function Farmers() {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-4 py-2 bg-green-600 text-white rounded disabled:bg-green-200"
+            className="px-4 py-2 bg-green-600 text-white rounded disabled:bg-green-300 disabled:cursor-not-allowed"
           >
             Next
           </button>
+        </div>
+      )}
+
+      {/* Add Farmer Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-2xl p-6 max-w-md w-full"
+          >
+            <h3 className="text-2xl font-bold text-green-900 mb-4">Add New Farmer</h3>
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Full Name *"
+                className="w-full border border-green-300 rounded-lg p-2"
+                value={newFarmer.name}
+                onChange={(e) => setNewFarmer({ ...newFarmer, name: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Phone Number *"
+                className="w-full border border-green-300 rounded-lg p-2"
+                value={newFarmer.phone}
+                onChange={(e) => setNewFarmer({ ...newFarmer, phone: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Station"
+                className="w-full border border-green-300 rounded-lg p-2"
+                value={newFarmer.station}
+                onChange={(e) => setNewFarmer({ ...newFarmer, station: e.target.value })}
+              />
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleAddFarmer}
+                className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                Add Farmer
+              </button>
+              <button
+                onClick={() => { setShowAddModal(false); setNewFarmer({ name: "", phone: "", station: "" }); }}
+                className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </motion.div>
         </div>
       )}
     </div>

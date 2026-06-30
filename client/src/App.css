@@ -32,7 +32,34 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+:root {
+  --admin-color: #2F855A;
+  --drymill-color: #059669;
+  --wetmill-color: #2563EB;
+  --finance-color: #7C3AED;
+  --farmer-color: #D97706;
+  --buyer-color: #0891B2;
+}
+
+/* Dark theme classes */
+.dark {
+  --bg-primary: #1a202c;
+  --bg-secondary: #2d3748;
+  --text-primary: #f7fafc;
+  --text-secondary: #e2e8f0;
+  --border-color: #4a5568;
+}
+
+.light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7fafc;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --border-color: #e2e8f0;
 }

@@ -18,7 +18,7 @@ export default function Contact() {
         <p className="text-card-foreground">
           <strong>Phone:</strong>{" "}
           <a href="tel:+254742195920" className="text-green2 hover:underline">
-            +254 742 195 920
+            +254 727 537 684
           </a>
         </p>
       </div>

@@ -1,250 +1,275 @@
-import React, { useState } from "react";
+// src/pages/drymill/Grading.jsx
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
+import { Save, RefreshCw, Coffee, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function Grading() {
-  const [dashboard, setDashboard] = useState({
-    lotId: "",
-    defects: { insect: 0, broken: 0, unripe: 0 },
-    moistureContent: 0,
-    cuppingScore: {
-      flavour: 0,
-      acidity: 0,
-      aroma: 0,
-      body: 0,
-      aftertaste: 0,
-      total: 0,
-    },
-    date: new Date().toISOString().slice(0, 10),
+  const [farmers, setFarmers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState(null);
+  const [message, setMessage] = useState(null);
+
+  const [formData, setFormData] = useState({
+    farmerId: "",
+    weight: "",
+    cuppingScore: "",
+    grade: "",
+    moistureContent: "",
+    defects: {},
+    notes: ""
   });
 
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [showResult, setShowResult] = useState(false);
-  const [toast, setToast] = useState(null);
+  const [scores, setScores] = useState({
+    aroma: 0,
+    flavor: 0,
+    aftertaste: 0,
+    acidity: 0,
+    body: 0,
+    uniformity: 0,
+    balance: 0,
+    cleanCup: 0,
+    sweetness: 0,
+    overall: 0
+  });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  useEffect(() => {
+    fetchFarmers();
+  }, []);
 
-    if (name.startsWith("defects.")) {
-      const key = name.split(".")[1];
-      setDashboard((prev) => ({
-        ...prev,
-        defects: { ...prev.defects, [key]: Number(value) },
-      }));
-    } else if (name.startsWith("cuppingScore.")) {
-      const key = name.split(".")[1];
-      setDashboard((prev) => ({
-        ...prev,
-        cuppingScore: { ...prev.cuppingScore, [key]: Number(value) },
-      }));
-    } else {
-      setDashboard((prev) => ({ ...prev, [name]: value }));
+  const fetchFarmers = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(
+        "http://localhost:5000/api/operator/farmers",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        setFarmers(res.data.data.farmers || []);
+      }
+    } catch (err) {
+      console.error("Error fetching farmers:", err);
     }
   };
 
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
+  const calculateTotal = () => {
+    return Object.values(scores).reduce((sum, val) => sum + (Number(val) || 0), 0);
+  };
+
+  const getGrade = (score) => {
+    if (score >= 80) return "Specialty";
+    if (score >= 75) return "Premium";
+    if (score >= 60) return "Commercial";
+    return "Below Standard";
+  };
+
+  const handleScoreChange = (field, value) => {
+    const num = Number(value);
+    if (num >= 0 && num <= 10) {
+      setScores(prev => ({ ...prev, [field]: num }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setShowResult(false);
+    const totalScore = calculateTotal();
+    const grade = getGrade(totalScore);
+
+    if (!formData.farmerId || !formData.weight) {
+      setMessage({ type: "error", text: "Farmer and weight are required" });
+      return;
+    }
+
+    setSubmitting(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/grading/grade", dashboard);
-      console.log("📦 Grading submission response:", res.data);
+      const token = localStorage.getItem('token');
+      const payload = {
+        farmerId: formData.farmerId,
+        weight: parseFloat(formData.weight),
+        cuppingScore: totalScore,
+        grade: grade,
+        moistureContent: parseFloat(formData.moistureContent) || 0,
+        defects: formData.defects || {},
+        notes: formData.notes
+      };
 
-      setResult(res.data.delivery);
-      showToast("✅ Grading saved successfully!");
-      setDashboard({
-        lotId: "",
-        defects: { insect: 0, broken: 0, unripe: 0 },
-        moistureContent: 0,
-        cuppingScore: {
-          flavour: 0,
-          acidity: 0,
-          aroma: 0,
-          body: 0,
-          aftertaste: 0,
-          total: 0,
-        },
-        date: new Date().toISOString().slice(0, 10),
-      });
+      const res = await axios.post(
+        "http://localhost:5000/api/operator/gradings",
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      setTimeout(() => setShowResult(true), 200);
+      if (res.data.success) {
+        setResult(res.data.data);
+        setMessage({ type: "success", text: "✅ Grading recorded successfully!" });
+        // Reset form
+        setFormData({ farmerId: "", weight: "", cuppingScore: "", grade: "", moistureContent: "", defects: {}, notes: "" });
+        setScores({ aroma: 0, flavor: 0, aftertaste: 0, acidity: 0, body: 0, uniformity: 0, balance: 0, cleanCup: 0, sweetness: 0, overall: 0 });
+      }
     } catch (err) {
-      console.error("🚨 Grading submission error:", err);
-      showToast("❌ Error submitting grading", "error");
+      console.error("Grading error:", err);
+      setMessage({ type: "error", text: err.response?.data?.error || "Failed to record grading" });
     } finally {
-      setLoading(false);
+      setSubmitting(false);
+      setTimeout(() => setMessage(null), 5000);
     }
   };
 
+  const totalScore = calculateTotal();
+  const grade = getGrade(totalScore);
+
   return (
-    <div
-      style={{
-        background: "linear-gradient(to bottom right, #e8f5e9, #ffffff)",
-        minHeight: "100vh",
-        padding: "40px",
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-        position: "relative",
-      }}
-    >
-      {/* Toast Notification */}
-      {toast && (
-        <div
-          style={{
-            position: "fixed",
-            top: "20px",
-            right: "20px",
-            background: toast.type === "success" ? "#43a047" : "#e53935",
-            color: "white",
-            padding: "12px 20px",
-            borderRadius: "8px",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-            opacity: toast ? 1 : 0,
-            transition: "opacity 0.3s ease",
-            zIndex: 1000,
-          }}
-        >
-          {toast.message}
+    <div className="p-6 min-h-screen bg-gradient-to-br from-green-50 via-green-100 to-white">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-green-900 flex items-center gap-2">
+            <Coffee className="h-7 w-7 text-green-600" /> Coffee Grading
+          </h2>
+          <button
+            onClick={fetchFarmers}
+            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" /> Refresh
+          </button>
         </div>
-      )}
 
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: "12px",
-          padding: "30px",
-          maxWidth: "600px",
-          margin: "0 auto",
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <h2 style={{ textAlign: "center", color: "#2e7d32", marginBottom: "20px" }}>
-          ☕ Coffee Grading Form
-        </h2>
+        {message && (
+          <div className={`p-4 rounded-lg mb-4 flex items-center gap-2 ${message.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            }`}>
+            {message.type === "success" ? <CheckCircle className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+            {message.text}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit}>
-          <label>Lot ID</label>
-          <input
-            type="text"
-            name="lotId"
-            placeholder="Enter Lot ID"
-            value={dashboard.lotId}
-            onChange={handleChange}
-            required
-            style={inputStyle}
-          />
-
-          <label>Moisture Content (%)</label>
-          <input
-            type="number"
-            name="moistureContent"
-            placeholder="Moisture Content (%)"
-            value={dashboard.moistureContent}
-            onChange={handleChange}
-            required
-            style={inputStyle}
-          />
-
-          <label>Date</label>
-          <input
-            type="date"
-            name="date"
-            value={dashboard.date}
-            onChange={handleChange}
-            required
-            style={inputStyle}
-          />
-
-          <h3 style={{ color: "#1b5e20", marginTop: "25px" }}>Defects</h3>
-          {["insect", "broken", "unripe"].map((defect) => (
-            <input
-              key={defect}
-              type="number"
-              name={`defects.${defect}`}
-              placeholder={`${defect.charAt(0).toUpperCase() + defect.slice(1)} defects`}
-              value={dashboard.defects[defect]}
-              onChange={handleChange}
+        <form onSubmit={handleSubmit} className="bg-white/90 rounded-2xl p-6 shadow-lg border border-green-50">
+          {/* Farmer Selection */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Select Farmer *</label>
+            <select
+              value={formData.farmerId}
+              onChange={(e) => setFormData({ ...formData, farmerId: e.target.value })}
+              className="w-full border border-green-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500"
               required
-              style={inputStyle}
-            />
-          ))}
+            >
+              <option value="">Select a farmer...</option>
+              {farmers.map(f => (
+                <option key={f._id} value={f._id}>{f.name} - {f.phone}</option>
+              ))}
+            </select>
+          </div>
 
-          <h3 style={{ color: "#1b5e20", marginTop: "25px" }}>Cupping Scores</h3>
-          {["flavour", "acidity", "aroma", "body", "aftertaste", "total"].map((field) => (
-            <input
-              key={field}
-              type="number"
-              name={`cuppingScore.${field}`}
-              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-              value={dashboard.cuppingScore[field]}
-              onChange={handleChange}
-              required
-              style={inputStyle}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg) *</label>
+              <input
+                type="number"
+                step="0.01"
+                value={formData.weight}
+                onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                className="w-full border border-green-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Moisture Content (%)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={formData.moistureContent}
+                onChange={(e) => setFormData({ ...formData, moistureContent: e.target.value })}
+                className="w-full border border-green-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+          </div>
+
+          {/* SCAA Cupping Scores */}
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold text-green-800 mb-3">SCAA Cupping Scores (0-10)</h3>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {Object.entries(scores).map(([key, value]) => (
+                <div key={key}>
+                  <label className="block text-xs font-medium text-gray-600 capitalize">{key}</label>
+                  <input
+                    type="number"
+                    step="0.25"
+                    min="0"
+                    max="10"
+                    value={value}
+                    onChange={(e) => handleScoreChange(key, e.target.value)}
+                    className="w-full border border-green-300 rounded-lg p-1 text-sm focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Total Score & Grade */}
+          <div className="mt-6 grid grid-cols-2 gap-4 bg-green-50 rounded-xl p-4">
+            <div>
+              <p className="text-sm text-gray-600">Total Score</p>
+              <p className="text-3xl font-bold text-green-700">{totalScore.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Grade</p>
+              <p className={`text-3xl font-bold ${grade === "Specialty" ? "text-green-700" :
+                grade === "Premium" ? "text-blue-700" :
+                  grade === "Commercial" ? "text-yellow-700" :
+                    "text-red-700"
+                }`}>{grade}</p>
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              rows="2"
+              className="w-full border border-green-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500"
+              placeholder="Additional notes..."
             />
-          ))}
+          </div>
 
           <button
             type="submit"
-            disabled={loading}
-            style={{
-              width: "100%",
-              backgroundColor: loading ? "#a5d6a7" : "#43a047",
-              color: "white",
-              border: "none",
-              padding: "12px",
-              borderRadius: "8px",
-              marginTop: "20px",
-              cursor: loading ? "not-allowed" : "pointer",
-              transition: "background 0.3s",
-            }}
+            disabled={submitting}
+            className="w-full mt-6 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2 disabled:bg-green-300"
           >
-            {loading ? "Submitting..." : "Submit Grading"}
+            {submitting ? "Submitting..." : <><Save className="h-4 w-4" /> Record Grading</>}
           </button>
         </form>
 
+        {/* Result Display */}
         {result && (
-          <div
-            style={{
-              marginTop: "25px",
-              padding: "20px",
-              border: "1px solid #a5d6a7",
-              borderRadius: "10px",
-              background: "#f1f8e9",
-              color: "#2e7d32",
-              transform: showResult ? "translateY(0)" : "translateY(30px)",
-              opacity: showResult ? 1 : 0,
-              transition: "all 0.6s ease",
-            }}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-6 bg-white/90 rounded-2xl p-6 shadow-lg border border-green-50"
           >
-            <h3>✅ Grading Recorded</h3>
-            <p>
-              <b>Lot:</b> {result.lotId}
-            </p>
-            <p>
-              <b>Grade:</b> {result.grade}
-            </p>
-            <p>
-              <b>Cupping Score:</b> {result.cuppingScore?.total}
-            </p>
-            <p>
-              <b>Total Payout:</b> KSh {result.totalPayout}
-            </p>
-          </div>
+            <h3 className="text-lg font-bold text-green-800 mb-3">✅ Grading Result</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-green-50 rounded-lg p-3 text-center">
+                <p className="text-xs text-gray-500">Lot ID</p>
+                <p className="font-bold text-green-700">{result.lotId || "N/A"}</p>
+              </div>
+              <div className="bg-green-50 rounded-lg p-3 text-center">
+                <p className="text-xs text-gray-500">Grade</p>
+                <p className="font-bold text-green-700">{result.grade || "N/A"}</p>
+              </div>
+              <div className="bg-green-50 rounded-lg p-3 text-center">
+                <p className="text-xs text-gray-500">Cupping Score</p>
+                <p className="font-bold text-green-700">{result.cuppingScore || "N/A"}</p>
+              </div>
+              <div className="bg-green-50 rounded-lg p-3 text-center">
+                <p className="text-xs text-gray-500">Status</p>
+                <p className="font-bold text-green-700">{result.payoutStatus || "Pending"}</p>
+              </div>
+            </div>
+          </motion.div>
         )}
       </div>
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "10px",
-  margin: "8px 0",
-  borderRadius: "6px",
-  border: "1px solid #ccc",
-  fontSize: "14px",
-};

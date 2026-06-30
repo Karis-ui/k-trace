@@ -9,15 +9,15 @@ const africastalkingC = africastalking({
 
 const sms = africastalkingC.SMS;
 
-export const sendSMS = async(to, message) =>{
-    try{
+export const sendSMS = async (to, message) => {
+    try {
         const result = await sms.send({
             to: [to],
             message, from: process.env.SMS_SENDER_ID || "CoffeeTech"
         });
 
         return result;
-    }catch(error){
+    } catch (error) {
         console.error("SMS sending failed:", error);
         throw error;
     }

@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 
 const BuyerSchema = new mongoose.Schema({
-    id: {type:Number,required:true,unique:true},
+    id: { type: Number, required: true, unique: true },
     name: String,
     email: String,
-    phone: {type:String,required:true,unique:true},
+    phone: { type: String, required: true, unique: true },
     company: String,
     subscribedGrades: [String],
-    notificationEnabled: {type:Boolean,default:true},
-    password: {type:String,required:true}
+    notificationEnabled: { type: Boolean, default: true },
+    password: { type: String, required: true },
+    status: { type: String, enum: ["active", "inactive"] },
 });
 
-const Buyer = mongoose.model("Buyer",BuyerSchema);
+const Buyer = mongoose.model("Buyer", BuyerSchema);
 export default Buyer;

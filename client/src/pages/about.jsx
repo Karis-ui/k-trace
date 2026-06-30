@@ -19,7 +19,7 @@ export default function About() {
         />
         <h1 className="text-4xl font-extrabold text-green-800">About Kahawa Trace</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          A digital platform connecting Kenyan coffee farmers directly with buyers, 
+          A digital platform connecting Kenyan coffee farmers directly with buyers,
           empowering communities, and building transparency across the value chain.
         </p>
       </motion.div>
@@ -36,10 +36,10 @@ export default function About() {
           </CardHeader>
           <CardContent>
             <p className="leading-relaxed text-gray-700">
-              At <span className="font-semibold text-green-700">Kahawa Trace</span>, 
-              our mission is to revolutionize coffee farming in Kenya. We empower farmers 
-              with access to fair markets, real-time data, and digital traceability tools.  
-              From farm to cup, we ensure that every coffee bean carries a story of trust, 
+              At <span className="font-semibold text-green-700">Kahawa Trace</span>,
+              our mission is to revolutionize coffee farming in Kenya. We empower farmers
+              with access to fair markets, real-time data, and digital traceability tools.
+              From farm to cup, we ensure that every coffee bean carries a story of trust,
               sustainability, and farmer empowerment.
             </p>
           </CardContent>
@@ -58,9 +58,9 @@ export default function About() {
           </CardHeader>
           <CardContent>
             <p className="leading-relaxed text-gray-700">
-              We envision a transparent, farmer-first economy where smallholder farmers 
-              gain global recognition and fair value for their hard work. By digitizing 
-              coffee farming, Kahawa Trace aims to eliminate exploitation, increase farmer 
+              We envision a transparent, farmer-first economy where smallholder farmers
+              gain global recognition and fair value for their hard work. By digitizing
+              coffee farming, Kahawa Trace aims to eliminate exploitation, increase farmer
               earnings, and drive sustainable livelihoods.
             </p>
           </CardContent>
@@ -80,11 +80,11 @@ export default function About() {
           <CardContent>
             <ul className="list-disc list-inside space-y-3 text-gray-700">
               <li>
-                <strong>Market Linkage:</strong> Farmers connect directly with 
+                <strong>Market Linkage:</strong> Farmers connect directly with
                 buyers, cutting out middlemen.
               </li>
               <li>
-                <strong>Traceability:</strong> Every coffee bean can be traced from farm to buyer, 
+                <strong>Traceability:</strong> Every coffee bean can be traced from farm to buyer,
                 ensuring authenticity.
               </li>
               <li>
@@ -132,8 +132,8 @@ export default function About() {
       >
         <h2 className="text-3xl font-bold text-green-700">🌟 The Future of Coffee Starts Here</h2>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Kahawa Trace is more than just a platform—it is a movement to empower 
-          farmers, delight buyers, and transform Kenya’s coffee industry. Together, 
+          Kahawa Trace is more than just a platform—it is a movement to empower
+          farmers, delight buyers, and transform Kenya’s coffee industry. Together,
           we are shaping the future of agriculture.
         </p>
       </motion.div>
