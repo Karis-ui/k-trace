@@ -27,7 +27,7 @@ const mockConfig = {
 let africastalkingConfig = mockConfig;
 let smsEnabled = false;
 
-if (apiKey && username && apiKey !== 'atsk_47fb2a6300d94a50e9ae836bf30760b1e8361b0b24976a6e1f1c2cf2ddffad59d7abd0b5' && username !== 'sandbox') {
+if (apiKey && username && apiKey === 'atsk_47fb2a6300d94a50e9ae836bf30760b1e8361b0b24976a6e1f1c2cf2ddffad59d7abd0b5' && username === 'sandbox') {
     try {
         africastalkingConfig = africastalking({
             apiKey: apiKey,
