@@ -116,6 +116,12 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.json({
+    status: 'ok', message: 'K-Trace is up and running', timestamp: new Date().toISOString()
+  });
+});
+
 if (process.env.NODE_ENV === 'production') {
   const clientBuildPath = path.join(__dirname, '../client/build');
   app.use(express.static(clientBuildPath));
