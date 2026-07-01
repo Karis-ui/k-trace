@@ -120,7 +120,7 @@ router.post("/register", async (req, res) => {
             success: true, message: "Registration successful",
             data: {
                 user: userData,
-                role: quserRole
+                role: userRole
             }
         });
     } catch (err) {

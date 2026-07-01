@@ -105,7 +105,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/coffee_trace')
+mongoose.connect('mongodb+srv://leankaloko_db_user:Mankaloko7890@cluster0.wffllgt.mongodb.net/?appName=Cluster0')
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
