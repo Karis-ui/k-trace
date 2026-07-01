@@ -38,6 +38,14 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const allowedOrigins = [
+  process.env.CLIENT_URL || 'http://localhost:3000',
+  'https://zesty-ktrace.up.railway.app',
+  'https://k-trace.up.railway.app',
+  'https://localhost:5000',
+  'https://k-trace.up.railway.app',
+].filter(Boolean);
+
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -50,9 +58,20 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true,
-  optionsSuccessStatus: 200
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+            callback(null, true);
+        } else {
+            console.log('❌ CORS blocked origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    optionsSuccessStatus: 200
 }));
 
 app.use(compression());
@@ -91,7 +110,7 @@ app.use("/api/operator/payouts/:id/process", payoutLimiter);
 app.use("/api/admin/exports", exportLimiter);
 app.use("/api/admin/reports", exportLimiter);
 
-app.get("/api/health", (eq, res) => {
+app.get("/api/health", (req, res) => {
   res.json({
     status: 'ok', message: 'K-Trace API is running', timestamp: new Date().toISOString()
   });
