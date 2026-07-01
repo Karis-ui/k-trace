@@ -4,7 +4,7 @@ import Admin from "../models/Admin.js";
 import Operator from "../models/Operator.js";
 import Farmer from "../models/Farmer.js";
 import Buyer from "../models/Buyer.js";
-import bcrypt from "bcryptjs/dist/bcrypt.js";
+import bcrypt from "bcrypt";
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 const loginAttemptLimiter = new RateLimiterMemory({

@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Buyer from '../models/Buyer.js';
 import Admin from '../models/Admin.js';
