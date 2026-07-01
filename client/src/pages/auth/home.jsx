@@ -132,7 +132,7 @@ export default function Home() {
 
               <div className="flex gap-4 mt-4">
                 <Link to="/signup"><Button className="btn-kt text-white px-6 py-3 rounded-lg">Get Started</Button></Link>
-                <Link to="/trace"><Button className="bg-white border px-6 py-3 rounded-lg">Quick Trace</Button></Link>
+                <Link to="/analytics"><Button className="bg-white border px-6 py-3 rounded-lg">View stats</Button></Link>
               </div>
             </div>
             <div className="relative">
