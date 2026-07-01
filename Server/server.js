@@ -110,15 +110,9 @@ app.use("/api/operator/payouts/:id/process", payoutLimiter);
 app.use("/api/admin/exports", exportLimiter);
 app.use("/api/admin/reports", exportLimiter);
 
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: 'ok', message: 'K-Trace API is running', timestamp: new Date().toISOString()
-  });
-});
-
 app.get("/", (req, res) => {
   res.json({
-    status: 'ok', message: 'K-Trace is up and running', timestamp: new Date().toISOString()
+    status: 'ok', message: 'K-Trace API is running', timestamp: new Date().toISOString()
   });
 });
 
