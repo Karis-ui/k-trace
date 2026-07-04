@@ -26,8 +26,7 @@ import {
   farmerLimiter,
   buyerLimiter,
   ussdLimiter,
-  userLimiter,
-  ipLimiter
+  userLimiter,ipLimiter
 } from "./config/rateLimiter.js";
 import { fileURLToPath } from "url";
 
