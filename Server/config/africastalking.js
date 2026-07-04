@@ -27,21 +27,6 @@ const mockConfig = {
 let africastalkingConfig = mockConfig;
 let smsEnabled = false;
 
-if (apiKey && username && apiKey !== 'sandbox' && username !== 'enter_your_username') {
-    try {
-        africastalkingConfig = africastalking({
-            apiKey: apiKey,
-            username: username,
-        });
-        smsEnabled = true;
-        console.log("✅ Africastalking initialized successfully");
-    } catch (error) {
-        console.warn("⚠️ Failed to initialize Africastalking:", error.message);
-        africastalkingConfig = mockConfig;
-    }
-} else {
-    console.log("⚠️ Africastalking running in MOCK mode (no valid credentials)");
-}
 
 export const sendSMS = async (phoneNumber, message) => {
     if (!phoneNumber) {
