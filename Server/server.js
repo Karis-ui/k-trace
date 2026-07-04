@@ -116,14 +116,6 @@ app.get("/", (req, res) => {
   });
 });
 
-if (process.env.NODE_ENV === 'production') {
-  const clientBuildPath = path.join(__dirname, '../client/build');
-  app.use(express.static(clientBuildPath));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(clientBuildPath, 'index.html'));
-  });
-}
-
 mongoose.connect('mongodb+srv://leankaloko_db_user:Mankaloko7890@cluster0.wffllgt.mongodb.net/?appName=Cluster0')
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
