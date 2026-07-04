@@ -73,13 +73,7 @@ app.use(cors({
     optionsSuccessStatus: 200
 }));
 
-
-app.use((req, res, next) => {
-    if (req.headers['x-forwarded-for']) {
-        req.ip = req.headers['x-forwarded-for'].split(',')[0];
-    }
-    next();
-});
+app.set('trust proxy', 1); 
 
 app.use(compression());
 
