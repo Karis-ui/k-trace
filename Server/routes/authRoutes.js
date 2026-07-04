@@ -44,7 +44,6 @@ router.post("/register", async (req, res) => {
             });
         }
 
-        // Validate role
         const validRoles = ['admin', 'farmer', 'buyer', 'drymill', 'wetmill', 'finance'];
         if (!validRoles.includes(role)) {
             return res.status(400).json({
@@ -53,7 +52,6 @@ router.post("/register", async (req, res) => {
             });
         }
 
-        // Station is required for farmers and operators
         if ((role === 'farmer' || role === 'drymill' || role === 'wetmill' || role === 'finance') && !station) {
             return res.status(400).json({
                 success: false,
@@ -61,7 +59,6 @@ router.post("/register", async (req, res) => {
             });
         }
 
-        // Company is required for buyers
         if (role === 'buyer' && !company) {
             return res.status(400).json({
                 success: false,
@@ -150,7 +147,6 @@ router.post("/register", async (req, res) => {
         
         await user.save();
         
-        // Send SMS (only for farmers)
         try {
             if (role === 'farmer') {
                 const message = `Welcome ${name} to K-Trace Coffee grading system! Your Farmer ID: ${user.id}`;
