@@ -1,13 +1,6 @@
 import rateLimit from 'express-rate-limit';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 
-app.use((req, res, next) => {
-    if (req.headers['x-forwarded-for']) {
-        req.ip = req.headers['x-forwarded-for'].split(',')[0];
-    }
-    next();
-});
-
 export const generalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,

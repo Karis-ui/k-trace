@@ -73,6 +73,14 @@ app.use(cors({
     optionsSuccessStatus: 200
 }));
 
+
+app.use((req, res, next) => {
+    if (req.headers['x-forwarded-for']) {
+        req.ip = req.headers['x-forwarded-for'].split(',')[0];
+    }
+    next();
+});
+
 app.use(compression());
 
 app.use(express.json({ limit: '10mb' }));
