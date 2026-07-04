@@ -1,5 +1,4 @@
-// src/pages/Signup.jsx - Fix the submit handler and field names
-
+// src/pages/Signup.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -17,20 +16,22 @@ import {
   Briefcase,
   CheckCircle,
   XCircle,
+  Building,
 } from "lucide-react";
 import logo from "../../assets/2.jpg";
 import SocialLogin from "../../social/socialLogin";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
-    name: "",        // ✅ Changed from username
+    name: "",
     email: "",
     phone: "",
-    station: "",     // ✅ Changed from farm_location
-    idNumber: "",    // ✅ Changed from id_number (but backend doesn't use this for farmers)
+    station: "",
+    idNumber: "",
+    company: "",      // ✅ Added for buyer
     role: "farmer",
-    password: "",    // ✅ Changed from password1
-    confirmPassword: "", // ✅ Changed from password2
+    password: "",
+    confirmPassword: "",
   });
 
   const [rules, setRules] = useState({
@@ -66,7 +67,9 @@ export default function Signup() {
 
   const isPasswordValid = Object.values(rules).every(Boolean);
 
-  // ✅ FIXED: Submit handler matches backend
+  // Get API URL from environment or use deployed URL
+  const API_URL = process.env.REACT_APP_API_URL || 'https://zesty-ktrace.up.railway.app/api';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -80,34 +83,46 @@ export default function Signup() {
       return;
     }
 
-    // Validate required fields
-    if (!formData.name || !formData.email || !formData.phone || !formData.station) {
-      setError("Please fill in all required fields.");
+    // Validate required fields based on role
+    if (!formData.name || !formData.email || !formData.phone) {
+      setError("Name, email and phone are required.");
+      setLoading(false);
+      return;
+    }
+
+    // Station required for farmers and operators
+    if (['farmer', 'drymill', 'wetmill', 'finance'].includes(formData.role) && !formData.station) {
+      setError("Station is required for farmers and operators.");
+      setLoading(false);
+      return;
+    }
+
+    // Company required for buyers
+    if (formData.role === 'buyer' && !formData.company) {
+      setError("Company name is required for buyers.");
       setLoading(false);
       return;
     }
 
     try {
-      // ✅ Payload matches backend expectations
       const payload = {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
         role: formData.role,
-        station: formData.station,
-        // Optional: include idNumber if backend supports it
-        // id: formData.idNumber,
+        ...(formData.station && { station: formData.station }),
+        ...(formData.company && { company: formData.company }),
+        ...(formData.idNumber && { id: formData.idNumber }),
       };
 
       console.log("📤 Sending registration payload:", payload);
 
-      const res = await axios.post("http://localhost:5000/api/auth/register", payload);
+      const res = await axios.post(`${API_URL}/auth/register`, payload);
 
       console.log("✅ Registration response:", res.data);
 
       if (res.data.success) {
-        // ✅ Store token if returned
         if (res.data.data?.token) {
           localStorage.setItem("token", res.data.data.token);
           localStorage.setItem("user", JSON.stringify(res.data.data.user));
@@ -118,28 +133,15 @@ export default function Signup() {
 
         setTimeout(() => {
           const role = res.data.data?.role || formData.role;
-          switch (role) {
-            case "farmer":
-              navigate("/farmer");
-              break;
-            case "buyer":
-              navigate("/buyer");
-              break;
-            case "wetmill":
-              navigate("/wetmill");
-              break;
-            case "drymill":
-              navigate("/drymill");
-              break;
-            case "finance":
-              navigate("/finance");
-              break;
-            case "admin":
-              navigate("/admin");
-              break;
-            default:
-              navigate("/login");
-          }
+          const rolePaths = {
+            farmer: "/farmer",
+            buyer: "/buyer",
+            wetmill: "/wetmill",
+            drymill: "/drymill",
+            finance: "/finance",
+            admin: "/admin",
+          };
+          navigate(rolePaths[role] || "/login");
         }, 1500);
       }
     } catch (err) {
@@ -159,7 +161,7 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-green3 via-white to-green3">
-      {/* LEFT SIDE - Keep as is */}
+      {/* LEFT SIDE */}
       <motion.div
         initial={{ opacity: 0, x: -60 }}
         animate={{ opacity: 1, x: 0 }}
@@ -194,7 +196,7 @@ export default function Signup() {
         <div className="absolute inset-0 bg-gradient-to-t from-green-900/40 to-transparent pointer-events-none"></div>
       </motion.div>
 
-      {/* RIGHT SIDE (SIGNUP FORM) - Updated field names */}
+      {/* RIGHT SIDE (SIGNUP FORM) */}
       <div className="flex-1 flex justify-center items-center p-8 bg-gradient-to-br from-white via-green-50 to-white">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -210,13 +212,13 @@ export default function Signup() {
           {success && <p className="text-green-600 text-center mb-4">{success}</p>}
 
           <form onSubmit={handleSubmit} className="space-y-4 text-lg">
-            {/* ✅ Name - matches backend "name" */}
+            {/* Name */}
             <div className="flex items-center border rounded-lg bg-white/70 focus-within:ring-2 focus-within:ring-green2">
               <User className="ml-3 text-gray-400" size={22} />
               <input
                 type="text"
                 name="name"
-                placeholder="Full Name"
+                placeholder="Full Name *"
                 value={formData.name}
                 onChange={handleChange}
                 required
@@ -230,7 +232,7 @@ export default function Signup() {
               <input
                 type="email"
                 name="email"
-                placeholder="Email"
+                placeholder="Email *"
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -244,7 +246,7 @@ export default function Signup() {
               <input
                 type="text"
                 name="phone"
-                placeholder="Phone Number"
+                placeholder="Phone Number *"
                 value={formData.phone}
                 onChange={handleChange}
                 required
@@ -252,21 +254,39 @@ export default function Signup() {
               />
             </div>
 
-            {/* ✅ Station - matches backend "station" */}
-            <div className="flex items-center border rounded-lg bg-white/70 focus-within:ring-2 focus-within:ring-green2">
-              <MapPin className="ml-3 text-gray-400" size={22} />
-              <input
-                type="text"
-                name="station"
-                placeholder="Station / Location"
-                value={formData.station}
-                onChange={handleChange}
-                required
-                className="flex-1 px-3 py-2 bg-transparent outline-none text-gray-700"
-              />
-            </div>
+            {/* Station - shown for farmers and operators */}
+            {(formData.role === 'farmer' || formData.role === 'drymill' || formData.role === 'wetmill' || formData.role === 'finance') && (
+              <div className="flex items-center border rounded-lg bg-white/70 focus-within:ring-2 focus-within:ring-green2">
+                <MapPin className="ml-3 text-gray-400" size={22} />
+                <input
+                  type="text"
+                  name="station"
+                  placeholder="Station / Location *"
+                  value={formData.station}
+                  onChange={handleChange}
+                  required
+                  className="flex-1 px-3 py-2 bg-transparent outline-none text-gray-700"
+                />
+              </div>
+            )}
 
-            {/* Optional: ID Number (if backend supports it) */}
+            {/* Company - shown for buyers */}
+            {formData.role === 'buyer' && (
+              <div className="flex items-center border rounded-lg bg-white/70 focus-within:ring-2 focus-within:ring-green2">
+                <Building className="ml-3 text-gray-400" size={22} />
+                <input
+                  type="text"
+                  name="company"
+                  placeholder="Company Name *"
+                  value={formData.company}
+                  onChange={handleChange}
+                  required
+                  className="flex-1 px-3 py-2 bg-transparent outline-none text-gray-700"
+                />
+              </div>
+            )}
+
+            {/* ID Number - Optional */}
             <div className="flex items-center border rounded-lg bg-white/70 focus-within:ring-2 focus-within:ring-green2">
               <Hash className="ml-3 text-gray-400" size={22} />
               <input
@@ -303,7 +323,7 @@ export default function Signup() {
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
-                placeholder="Password"
+                placeholder="Password *"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -324,7 +344,7 @@ export default function Signup() {
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
-                placeholder="Confirm Password"
+                placeholder="Confirm Password *"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
