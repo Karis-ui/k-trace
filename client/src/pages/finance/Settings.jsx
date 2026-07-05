@@ -36,7 +36,7 @@ export default function FinanceSettings() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(
-                "http://localhost:5000/api/finance/settings",
+                "https://zesty-ktrace.up.railway.app/api/finance/settings",
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -57,7 +57,7 @@ export default function FinanceSettings() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.put(
-                "http://localhost:5000/api/finance/settings",
+                "https://zesty-ktrace.up.railway.app/api/finance/settings",
                 settings,
                 { headers: { Authorization: `Bearer ${token}` } }
             );

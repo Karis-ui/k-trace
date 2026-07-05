@@ -17,7 +17,7 @@ export default function DrymillReports() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        "http://localhost:5000/api/operator/drymill/reports",
+        "https://zesty-ktrace.up.railway.app/api/operator/drymill/reports",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -41,7 +41,7 @@ export default function DrymillReports() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/operator/drymill/reports?type=${reportType}`,
+        `https://zesty-ktrace.up.railway.app/api/operator/drymill/reports?type=${reportType}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -61,7 +61,7 @@ export default function DrymillReports() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/operator/drymill/reports/${id}/download`,
+        `https://zesty-ktrace.up.railway.app/api/operator/drymill/reports/${id}/download`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

@@ -23,7 +23,7 @@ export default function Drymill() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/admin/drymill/analytics`,
+        `https://zesty-ktrace.up.railway.app/api/admin/drymill/analytics`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

@@ -22,7 +22,7 @@ export default function Payouts() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/admin/payouts?status=${statusFilter}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/payouts?status=${statusFilter}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -46,7 +46,7 @@ export default function Payouts() {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/admin/payouts/${id}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/payouts/${id}`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );

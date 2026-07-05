@@ -22,7 +22,7 @@ export default function FarmerGradings() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(
-                "http://localhost:5000/api/farmer/me/gradings",
+                "https://zesty-ktrace.up.railway.app/api/farmer/me/gradings",
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 

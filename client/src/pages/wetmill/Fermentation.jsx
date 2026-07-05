@@ -40,11 +40,11 @@ export default function WetMillFermentation() {
             const token = localStorage.getItem('token');
             const [fermRes, farmersRes] = await Promise.all([
                 axios.get(
-                    `http://localhost:5000/api/operator/wetmill/fermentation`,
+                    `https://zesty-ktrace.up.railway.app/api/operator/wetmill/fermentation`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 ),
                 axios.get(
-                    `http://localhost:5000/api/operator/wetmill/farmers`,
+                    `https://zesty-ktrace.up.railway.app/api/operator/wetmill/farmers`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 )
             ]);
@@ -78,8 +78,8 @@ export default function WetMillFermentation() {
         try {
             const token = localStorage.getItem('token');
             const url = editingId
-                ? `http://localhost:5000/api/operator/wetmill/fermentation/${editingId}`
-                : "http://localhost:5000/api/operator/wetmill/fermentation";
+                ? `https://zesty-ktrace.up.railway.app/api/operator/wetmill/fermentation/${editingId}`
+                : "https://zesty-ktrace.up.railway.app/api/operator/wetmill/fermentation";
             const method = editingId ? "put" : "post";
 
             const res = await axios[method](url, formData, {
@@ -102,7 +102,7 @@ export default function WetMillFermentation() {
         try {
             const token = localStorage.getItem('token');
             await axios.put(
-                `http://localhost:5000/api/operator/wetmill/fermentation/${id}`,
+                `https://zesty-ktrace.up.railway.app/api/operator/wetmill/fermentation/${id}`,
                 { status, progress },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -118,7 +118,7 @@ export default function WetMillFermentation() {
         try {
             const token = localStorage.getItem('token');
             await axios.delete(
-                `http://localhost:5000/api/operator/wetmill/fermentation/${id}`,
+                `https://zesty-ktrace.up.railway.app/api/operator/wetmill/fermentation/${id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             fetchData();

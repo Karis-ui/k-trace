@@ -18,7 +18,7 @@ export default function DryMillFarmers() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        "http://localhost:5000/api/operator/farmers",
+        "https://zesty-ktrace.up.railway.app/api/operator/farmers",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -45,7 +45,7 @@ export default function DryMillFarmers() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        "http://localhost:5000/api/operator/farmers",
+        "https://zesty-ktrace.up.railway.app/api/operator/farmers",
         newFarmer,
         { headers: { Authorization: `Bearer ${token}` } }
       );

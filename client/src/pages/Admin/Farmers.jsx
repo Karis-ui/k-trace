@@ -21,7 +21,7 @@ export default function Farmers() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/admin/farmers?search=${search}&page=${page}&limit=12`,
+        `https://zesty-ktrace.up.railway.app/api/admin/farmers?search=${search}&page=${page}&limit=12`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -51,7 +51,7 @@ export default function Farmers() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        "http://localhost:5000/api/admin/farmers",
+        "https://zesty-ktrace.up.railway.app/api/admin/farmers",
         newFarmer,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -68,7 +68,7 @@ export default function Farmers() {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/admin/farmers/${id}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/farmers/${id}`,
         { status: currentStatus === "active" ? "inactive" : "active" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -84,7 +84,7 @@ export default function Farmers() {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(
-        `http://localhost:5000/api/admin/farmers/${id}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/farmers/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchFarmers();

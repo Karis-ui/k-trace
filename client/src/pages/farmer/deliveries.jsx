@@ -21,7 +21,7 @@ export default function FarmerDeliveries() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(
-                "http://localhost:5000/api/farmer/me/deliveries",
+                "https://zesty-ktrace.up.railway.app/api/farmer/me/deliveries",
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 

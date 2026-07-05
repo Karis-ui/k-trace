@@ -49,7 +49,7 @@ export default function FarmerDashboard() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        "http://localhost:5000/api/farmer/dashboard",
+        "https://zesty-ktrace.up.railway.app/api/farmer/dashboard",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

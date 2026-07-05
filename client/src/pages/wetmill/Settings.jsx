@@ -27,7 +27,7 @@ export default function WetMillSettings() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(
-                "http://localhost:5000/api/operator/settings",
+                "https://zesty-ktrace.up.railway.app/api/operator/settings",
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -48,7 +48,7 @@ export default function WetMillSettings() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.put(
-                "http://localhost:5000/api/operator/settings",
+                "https://zesty-ktrace.up.railway.app/api/operator/settings",
                 settings,
                 { headers: { Authorization: `Bearer ${token}` } }
             );

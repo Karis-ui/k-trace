@@ -21,7 +21,7 @@ export default function FinanceFarmers() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(
-                `http://localhost:5000/api/finance/farmers?search=${search}&page=${page}`,
+                `https://zesty-ktrace.up.railway.app/api/finance/farmers?search=${search}&page=${page}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 

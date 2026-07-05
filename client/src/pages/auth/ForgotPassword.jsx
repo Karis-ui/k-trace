@@ -30,7 +30,7 @@ export default function ForgotPassword() {
         return;
       }
 
-      const res = await axios.post("http://localhost:5000/api/auth/forgot-password", {
+      const res = await axios.post("https://zesty-ktrace.up.railway.app/api/auth/forgot-password", {
         email: method === "email" ? value : undefined,
         phone: method === "phone" ? value : undefined,
       });
@@ -51,7 +51,7 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/reset-password", {
+      const res = await axios.post("https://zesty-ktrace.up.railway.app/api/auth/reset-password", {
         identifier: value,
         code: verificationCode,
       });

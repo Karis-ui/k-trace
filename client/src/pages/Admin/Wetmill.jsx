@@ -23,7 +23,7 @@ export default function Wetmill() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/admin/wetmill/analytics`,
+        `https://zesty-ktrace.up.railway.app/api/admin/wetmill/analytics`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

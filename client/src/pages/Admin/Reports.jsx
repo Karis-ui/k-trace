@@ -36,7 +36,7 @@ export default function Reports() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/admin/reports?type=${reportType}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/reports?type=${reportType}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -55,7 +55,7 @@ export default function Reports() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        "http://localhost:5000/api/admin/reports/history?limit=10",
+        "https://zesty-ktrace.up.railway.app/api/admin/reports/history?limit=10",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.success) {
@@ -83,7 +83,7 @@ export default function Reports() {
       if (endDate) params.append('endDate', endDate);
 
       const res = await axios.get(
-        `http://localhost:5000/api/admin/reports?${params}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/reports?${params}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

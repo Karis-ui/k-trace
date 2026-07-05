@@ -34,7 +34,7 @@ export default function Users() {
       setLoading(true);
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/admin/users`,
+        `https://zesty-ktrace.up.railway.app/api/admin/users`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -64,7 +64,7 @@ export default function Users() {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(
-        `http://localhost:5000/api/admin/${type}/${id}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/${type}/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchUsers();
@@ -82,7 +82,7 @@ export default function Users() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        "http://localhost:5000/api/auth/register",
+        "https://zesty-ktrace.up.railway.app/api/auth/register",
         newUser,
         { headers: { Authorization: `Bearer ${token}` } }
       );

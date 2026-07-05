@@ -27,7 +27,7 @@ export default function BuyerOrders() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(
-                `http://localhost:5000/api/buyer/orders?status=${statusFilter}`,
+                `https://zesty-ktrace.up.railway.app/api/buyer/orders?status=${statusFilter}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -53,7 +53,7 @@ export default function BuyerOrders() {
         try {
             const token = localStorage.getItem('token');
             await axios.delete(
-                `http://localhost:5000/api/buyer/orders/${id}`,
+                `https://zesty-ktrace.up.railway.app/api/buyer/orders/${id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             fetchOrders();

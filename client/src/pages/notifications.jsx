@@ -22,7 +22,7 @@ export default function Notifications() {
       const token = localStorage.getItem('token');
       // This endpoint would need to be created
       const res = await axios.get(
-        "http://localhost:5000/api/notifications",
+        "https://zesty-ktrace.up.railway.app/api/notifications",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -99,7 +99,7 @@ export default function Notifications() {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/notifications/${id}/read`,
+        `https://zesty-ktrace.up.railway.app/api/notifications/${id}/read`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -116,7 +116,7 @@ export default function Notifications() {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        "http://localhost:5000/api/notifications/read-all",
+        "https://zesty-ktrace.up.railway.app/api/notifications/read-all",
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

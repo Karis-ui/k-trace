@@ -32,7 +32,7 @@ export default function BuyerSettings() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(
-                "http://localhost:5000/api/buyer/settings",
+                "https://zesty-ktrace.up.railway.app/api/buyer/settings",
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -53,7 +53,7 @@ export default function BuyerSettings() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.put(
-                "http://localhost:5000/api/buyer/settings",
+                "https://zesty-ktrace.up.railway.app/api/buyer/settings",
                 settings,
                 { headers: { Authorization: `Bearer ${token}` } }
             );

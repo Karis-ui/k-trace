@@ -28,7 +28,7 @@ export default function Exports() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/admin/exports`,
+        `https://zesty-ktrace.up.railway.app/api/admin/exports`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -56,7 +56,7 @@ export default function Exports() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/admin/exports?entity=${exportForm.entity}&format=${exportForm.format}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/exports?entity=${exportForm.entity}&format=${exportForm.format}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -85,7 +85,7 @@ export default function Exports() {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(
-        `http://localhost:5000/api/admin/exports/${id}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/exports/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchExports();

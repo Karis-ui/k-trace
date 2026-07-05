@@ -40,7 +40,7 @@ export default function Inventory() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/admin/inventory?search=${search}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/inventory?search=${search}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -68,7 +68,7 @@ export default function Inventory() {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(
-        `http://localhost:5000/api/admin/inventory/${id}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/inventory/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchInventory();
@@ -83,8 +83,8 @@ export default function Inventory() {
     try {
       const token = localStorage.getItem('token');
       const url = editingItem
-        ? `http://localhost:5000/api/admin/inventory/${editingItem._id}`
-        : "http://localhost:5000/api/admin/inventory";
+        ? `https://zesty-ktrace.up.railway.app/api/admin/inventory/${editingItem._id}`
+        : "https://zesty-ktrace.up.railway.app/api/admin/inventory";
       const method = editingItem ? "put" : "post";
 
       await axios[method](url, formData, {

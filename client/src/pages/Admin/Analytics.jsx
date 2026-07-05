@@ -40,7 +40,7 @@ export default function AdminAnalytics() {
       const token = localStorage.getItem('token');
 
       const response = await axios.get(
-        `http://localhost:5000/api/admin/analytics?timeframe=${timeframe}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/analytics?timeframe=${timeframe}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

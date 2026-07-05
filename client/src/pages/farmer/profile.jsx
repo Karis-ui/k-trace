@@ -17,7 +17,7 @@ export default function Profile() {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const res = await axios.get("http://localhost:5000/api/farmer/my", {
+        const res = await axios.get("https://zesty-ktrace.up.railway.app/api/farmer/my", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setFarmer(res.data);
@@ -35,7 +35,7 @@ export default function Profile() {
   const handleSave = async () => {
     try {
       const res = await axios.put(
-        "http://localhost:5000/api/farmer/my/update",
+        "https://zesty-ktrace.up.railway.app/api/farmer/my/update",
         tempFarmer,
         { headers: { Authorization: `Bearer ${token}` } }
       );

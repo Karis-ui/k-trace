@@ -22,7 +22,7 @@ export default function DryMillProcessing() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        "http://localhost:5000/api/operator/drymill/processing",
+        "https://zesty-ktrace.up.railway.app/api/operator/drymill/processing",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

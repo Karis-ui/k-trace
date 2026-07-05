@@ -31,7 +31,7 @@ export default function FarmerSettings() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(
-                "http://localhost:5000/api/farmer/settings",
+                "https://zesty-ktrace.up.railway.app/api/farmer/settings",
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -52,7 +52,7 @@ export default function FarmerSettings() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.put(
-                "http://localhost:5000/api/farmer/settings",
+                "https://zesty-ktrace.up.railway.app/api/farmer/settings",
                 settings,
                 { headers: { Authorization: `Bearer ${token}` } }
             );

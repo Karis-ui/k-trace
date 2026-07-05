@@ -45,7 +45,7 @@ export default function AdminDashboard() {
       setError(null);
 
       const response = await axios.get(
-        `http://localhost:5000/api/admin/dashboard?timeframe=${timeframe}`
+        `https://zesty-ktrace.up.railway.app/api/admin/dashboard?timeframe=${timeframe}`
       );
 
       if (response.data.success) {

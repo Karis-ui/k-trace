@@ -23,7 +23,7 @@ export default function AdminBuyers() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/admin/buyers?search=${search}`,
+        `https://zesty-ktrace.up.railway.app/api/admin/buyers?search=${search}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

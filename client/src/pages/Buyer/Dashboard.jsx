@@ -51,7 +51,7 @@ export default function BuyerDashboard() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        "http://localhost:5000/api/buyer/dashboard",
+        "https://zesty-ktrace.up.railway.app/api/buyer/dashboard",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

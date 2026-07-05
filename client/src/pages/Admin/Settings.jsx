@@ -27,7 +27,7 @@ export default function Settings() {
       setLoading(true);
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        "http://localhost:5000/api/admin/settings",
+        "https://zesty-ktrace.up.railway.app/api/admin/settings",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -59,7 +59,7 @@ export default function Settings() {
       const token = localStorage.getItem('token');
 
       await axios.put(
-        "http://localhost:5000/api/admin/settings",
+        "https://zesty-ktrace.up.railway.app/api/admin/settings",
         settings,
         { headers: { Authorization: `Bearer ${token}` } }
       );

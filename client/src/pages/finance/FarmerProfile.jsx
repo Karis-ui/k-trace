@@ -29,7 +29,7 @@ export default function FarmerProfile() {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(
-        `http://localhost:5000/api/operator/farmers/${id}/profile`,
+        `https://zesty-ktrace.up.railway.app/api/operator/farmers/${id}/profile`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

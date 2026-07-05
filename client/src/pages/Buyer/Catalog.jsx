@@ -35,7 +35,7 @@ export default function BuyerCatalog() {
             if (filters.station) params.append('station', filters.station);
 
             const res = await axios.get(
-                `http://localhost:5000/api/buyer/catalog?${params}`,
+                `https://zesty-ktrace.up.railway.app/api/buyer/catalog?${params}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -60,7 +60,7 @@ export default function BuyerCatalog() {
         try {
             const token = localStorage.getItem('token');
             await axios.post(
-                "http://localhost:5000/api/buyer/orders",
+                "https://zesty-ktrace.up.railway.app/api/buyer/orders",
                 {
                     lotId: selectedLot._id,
                     quantity: orderQuantity

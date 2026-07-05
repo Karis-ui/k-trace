@@ -31,7 +31,7 @@ export default function FinancePayouts() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(
-                `http://localhost:5000/api/finance/payouts?status=${statusFilter}&page=${page}`,
+                `https://zesty-ktrace.up.railway.app/api/finance/payouts?status=${statusFilter}&page=${page}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -66,7 +66,7 @@ export default function FinancePayouts() {
             if (action === 'reject' && !data.reason) return;
 
             await axios.put(
-                `http://localhost:5000${endpoints[action]}`,
+                `https://zesty-ktrace.up.railway.app${endpoints[action]}`,
                 data,
                 { headers: { Authorization: `Bearer ${token}` } }
             );

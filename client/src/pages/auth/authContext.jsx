@@ -32,7 +32,7 @@ export const Authprovider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+            const response = await axios.post('https://zesty-ktrace.up.railway.app/api/auth/login', { email, password });
 
             if (response.data.success) {
                 const { token, user, role } = response.data.data;

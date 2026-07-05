@@ -22,7 +22,7 @@ export default function FarmerPayouts() {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.get(
-                "http://localhost:5000/api/farmer/me/payouts",
+                "https://zesty-ktrace.up.railway.app/api/farmer/me/payouts",
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 

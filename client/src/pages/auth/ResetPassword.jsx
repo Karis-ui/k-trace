@@ -55,7 +55,7 @@ export default function ResetPassword() {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/auth/reset-password", {
+      await axios.post("https://zesty-ktrace.up.railway.app/api/auth/reset-password", {
         token,
         newPassword: password1,
       });
